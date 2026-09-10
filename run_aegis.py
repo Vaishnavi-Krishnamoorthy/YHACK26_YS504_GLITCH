@@ -19,6 +19,8 @@ import numpy as np
 from PIL import Image
 
 from aegis.provenance import hash_file, generate_receipt, verify_pipeline
+from aegis.audit_ledger import append_receipt, verify_ledger, simulate_ledger_tampering
+
 from aegis.data_assurance import (
     compute_dhash,
     scan_duplicates,
@@ -181,6 +183,15 @@ def main():
     print(f"    - Composite Risk Score: {clean_decision['composite_risk_score']} / 100")
     print(f"    - Recommendation      : {clean_decision['recommendation']} [CLEARED FOR DEPLOYMENT]")
 
+    # Module 6: Cryptographic Chained Audit Ledger
+    print("\n[6] Module 6: Cryptographic Chained Audit Ledger")
+    ledger_path = os.path.join(receipts_dir, "audit_ledger.jsonl")
+    clean_block = append_receipt({"receipt": receipt, "triage": clean_decision}, ledger_path)
+    is_ledger_clean, ledger_report = verify_ledger(ledger_path)
+    print(f"    - Ledger Entry     : Block #{clean_block['index']} written (Hash: {clean_block['block_hash'][:24]}...)")
+    print(f"    - Chain Link       : Prev Hash ({clean_block['previous_block_hash'][:24]}...)")
+    print(f"    - Chain Integrity  : {ledger_report['status']} ({ledger_report['blocks_count']} blocks verified from genesis)")
+
     # -------------------------------------------------------------------------
     # RUN 2: Multi-Vector Threat Simulation
     # -------------------------------------------------------------------------
@@ -254,6 +265,27 @@ def main():
     print("    - Flags Raised:")
     for flag in attack_decision["flags_raised"]:
         print(f"        * {flag}")
+
+    # 5. Audit Ledger Tamper Detection Test
+    print("\n[5] Cryptographic Audit Ledger Tamper Detection Test:")
+    attack_block = append_receipt({"receipt": receipt, "triage": attack_decision}, ledger_path)
+    print(f"    - Appended Attack Audit Record to Ledger (Block #{attack_block['index']})")
+    is_valid_before, report_before = verify_ledger(ledger_path)
+    print(f"    - Pre-Attack Ledger Integrity : {report_before['status']} ({report_before['blocks_count']} blocks verified)")
+
+    print("\n    [!] ADVERSARY ATTACK SIMULATION: Modifying historical audit log entry (Block #0)...")
+    import shutil
+    tampered_demo_path = os.path.join(receipts_dir, "audit_ledger_tampered_demo.jsonl")
+    shutil.copyfile(ledger_path, tampered_demo_path)
+    simulate_ledger_tampering(tampered_demo_path, target_index=0, attack_type="modify")
+
+    is_valid_after, report_after = verify_ledger(tampered_demo_path)
+    print(f"    - Audit Verification Result   : >>> {'FAIL (TAMPER DETECTED)' if not is_valid_after else 'PASS'} <<<")
+    print(f"    - Pinpointed Corrupted Index  : Block #{report_after['corrupted_index']}")
+    print(f"    - Diagnostic Reason           : {report_after['reason']}")
+
+    if os.path.exists(tampered_demo_path):
+        os.remove(tampered_demo_path)
 
     # Export report to reports/assurance_report.json
     report_file = os.path.join(reports_dir, "assurance_report.json")
