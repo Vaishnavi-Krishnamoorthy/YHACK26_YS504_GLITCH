@@ -1,6 +1,6 @@
 {
   "receipt_id": "AEGIS-RCPT-20461FFAD97F",
-  "timestamp_utc": "2026-09-10T14:07:03.708999+00:00",
+  "timestamp_utc": "2026-09-10T14:35:03.658244+00:00",
   "framework": "AEGIS-CV v1.0 (Air-Gapped)",
   "pipeline_components": {
     "1. Input Dataset (COCO)": {
