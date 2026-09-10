@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AEGIS-CV | Review 3 Presentation | YHACK'26</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0c0d12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#222;}
+
+  /* 16:9 Slide container matching template aspect ratio */
+  .deck{width:1040px;height:585px;position:relative;background:#fff;border-radius:6px;box-shadow:0 12px 40px rgba(0,0,0,0.6);overflow:hidden;}
+  .slide{display:none;width:1040px;height:585px;background:#ffffff;position:absolute;top:0;left:0;flex-direction:column;animation:slideIn 0.3s ease;}
+  .slide.active{display:flex;}
+  @keyframes slideIn{from{opacity:0;transform:scale(0.985);}to{opacity:1;transform:scale(1);}}
+
+  /* HEADER BAR matching YHACK'26 sponsor template */
+  .hdr{width:100%;height:68px;background:linear-gradient(90deg,#ba000d 0%,#d32f2f 100%);display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex-shrink:0;border-bottom:3px solid #800000;}
+  .hdr-logos{display:flex;align-items:center;gap:12px;}
+  .logo-card{background:#ffffff;border-radius:4px;padding:4px 10px;display:flex;flex-direction:column;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+  .kpr-text{font-size:7.5px;font-weight:800;color:#0b2e4f;line-height:1.15;text-transform:uppercase;}
+  .kpr-sub{font-size:6px;color:#666;font-weight:500;}
+  .ieee-text{font-size:15px;font-weight:900;color:#00629b;letter-spacing:1px;}
+  .ras-text{font-size:7.5px;font-weight:800;color:#c0000c;line-height:1.15;text-transform:uppercase;}
+  .ausweg-text{font-size:11px;font-weight:900;color:#003399;letter-spacing:0.5px;}
+  .robotai-text{font-size:10px;font-weight:800;color:#222;}
+  .hdr-divider{width:1.5px;height:38px;background:rgba(255,255,255,0.3);margin:0 2px;}
+
+  .yhack-badge{display:flex;align-items:baseline;}
+  .yhack-y{font-size:32px;font-weight:900;color:#ffffff;font-style:italic;letter-spacing:-1px;}
+  .yhack-text{font-size:24px;font-weight:900;color:#ffffff;letter-spacing:0.5px;}
+  .yhack-26{font-size:24px;font-weight:900;color:#ffd54f;letter-spacing:1px;}
+
+  /* SLIDE BODY */
+  .slide-body{flex:1;padding:18px 36px 14px 36px;position:relative;overflow:hidden;background:#fff;}
+
+  /* RED CHEVRON BANNER */
+  .banner-wrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .section-banner{background:#c0000c;padding:7px 26px 7px 18px;display:inline-flex;align-items:center;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%);box-shadow:0 2px 4px rgba(192,0,12,0.25);}
+  .section-banner span{color:#ffffff;font-size:15px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;}
+  .speaker-badge{font-size:11px;font-weight:700;color:#c0000c;background:#fff0f0;border:1px solid #ffcdd2;padding:4px 12px;border-radius:14px;letter-spacing:0.3px;}
+
+  /* FOOTER */
+  .ftr{width:100%;height:26px;background:#c0000c;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;color:#ffffff;font-size:10px;font-weight:600;}
+  .ftr-left{display:flex;align-items:center;gap:6px;}
+  .chevrons{display:inline-flex;gap:4px;}
+  .chev{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:9px solid rgba(255,255,255,0.4);}
+  .page-indicator{font-size:10.5px;color:#fff;font-weight:700;letter-spacing:0.5px;}
+
+  /* TYPOGRAPHY & CARDS */
+  .slide-title{font-size:18px;font-weight:800;color:#1a1a1a;margin-bottom:12px;line-height:1.25;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  
+  .card{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:6px;padding:12px 14px;position:relative;}
+  .card-accent{border-left:4px solid #c0000c;}
+  .card-blue{border-left:4px solid #00629b;}
+  .card-header{font-size:12px;font-weight:800;color:#c0000c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+  .card-desc{font-size:11.5px;color:#374151;line-height:1.5;}
+  .card-desc ul{list-style:none;padding-left:0;}
+  .card-desc li{margin-bottom:5px;padding-left:14px;position:relative;}
+  .card-desc li::before{content:"•";color:#c0000c;font-weight:bold;position:absolute;left:0;}
+
+  /* TABLES */
+  .table-std{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:6px;}
+  .table-std th{background:#c0000c;color:#ffffff;padding:6px 10px;text-align:left;font-weight:700;font-size:11px;}
+  .table-std td{padding:6px 10px;border-bottom:1px solid #e5e7eb;color:#2d3748;}
+  .table-std tr:nth-child(even) td{background:#fafafa;}
+
+  /* PILLS & BADGES */
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.3px;}
+  .tag-green{background:#e6f4ea;color:#137333;}
+  .tag-yellow{background:#fef7e0;color:#b06000;}
+  .tag-red{background:#fce8e6;color:#c5221f;}
+
+  /* ROBOT SVG */
+  .robot-box{position:absolute;right:25px;bottom:30px;width:240px;height:380px;}
+  
+  /* NAV CONTROLS */
+  .nav-bar{display:flex;align-items:center;justify-content:space-between;width:1040px;padding:10px 0;}
+  .btn-nav{background:#1e293b;border:1px solid #334155;color:#ffffff;padding:7px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.15s;}
+  .btn-nav:hover{background:#c0000c;border-color:#c0000c;}
+  .btn-nav:disabled{opacity:0.3;cursor:not-allowed;}
+  .dots{display:flex;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:50%;background:#334155;cursor:pointer;}
+  .dot.active{background:#c0000c;transform:scale(1.2);}
+  .kbd-hint{color:#64748b;font-size:11.5px;}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ==========================================
+       SLIDE 1: TITLE SLIDE
+       ========================================== -->
+  <div class="slide active" id="s1">
+    <div class="hdr">
+      <div class="hdr-logos">
+        <div class="logo-card">
+          <div class="kpr-text">KPR Institute of</div>
+          <div class="kpr-text">Engineering and</div>
+          <div class="kpr-text">Technology</div>
+          <div class="kpr-sub">Autonomous, Affiliated to Anna Univ.</div>
+        </div>
+        <div class="hdr-divider"></div>
+        <div class="logo-card"><span class="ieee-text">IEEE</span></div>
+        <div class="hdr-divider"></div>
+        <div class="logo-card"><div class="ras-text">Robotics &<br/>Automation<br/>Society</div></div>
+        <div class="hdr-divider"></div>
+        <div class="logo-card"><span class="ausweg-text">ausweg</span></div>
+        <div class="hdr-divider"></div>
+        <div class="logo-card"><span class="robotai-text">RobotaAI</span></div>
+      </div>
+      <div class="yhack-badge">
+        <span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span>
+      </div>
+    </div>
+
+    <div class="slide-body" style="padding-top:26px;">
+      <div style="max-width:580px;">
+        <div style="font-size:12px;color:#c0000c;font-weight:800;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;">Challenge 22 — Computer Vision Assurance Framework</div>
+        <div style="font-size:36px;font-weight:900;color:#111827;line-height:1.1;margin-bottom:6px;">AEGIS-CV</div>
+        <div style="font-size:14px;color:#c0000c;font-weight:700;margin-bottom:14px;line-height:1.4;">Air-Gapped Evidence-Based Guardian for Integrity & Security in Computer Vision</div>
+        <div style="width:70px;height:3px;background:#c0000c;margin-bottom:18px;"></div>
+
+        <div style="display:grid;grid-template-columns:130px 1fr;gap:6px 12px;font-size:12px;margin-bottom:16px;">
+          <span style="font-weight:800;color:#c0000c;">TEAM NAME:</span><span style="font-weight:700;color:#111;">GLITCH</span>
+          <span style="font-weight:800;color:#c0000c;">TEAM ID:</span><span style="font-weight:700;color:#111;">YS504</span>
+          <span style="font-weight:800;color:#c0000c;">PS ID:</span><span style="font-weight:700;color:#111;">Challenge 22</span>
+          <span style="font-weight:800;color:#c0000c;">DOMAIN:</span><span style="font-weight:700;color:#111;">AI and Computer Vision</span>
+          <span style="font-weight:800;color:#c0000c;">REVIEW STAGE:</span><span style="font-weight:700;color:#c0000c;">Review 3: Final Product & Working Demonstration</span>
+        </div>
+
+        <div style="background:#f8f9fa;border:1px solid #e2e8f0;border-left:4px solid #c0000c;border-radius:4px;padding:8px 12px;">
+          <div style="font-size:11px;font-weight:800;color:#c0000c;margin-bottom:4px;text-transform:uppercase;">Team Members & Presentation Split:</div>
+          <div style="font-size:11px;color:#333;display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;">
+            <div>• <strong>Vaishnavi S:</strong> Slides 2 & 3 (Problem & Architecture)</div>
+            <div>• <strong>Vaishnavi K:</strong> Slides 4 & 5 (Implementation & Engines)</div>
+            <div>• <strong>Tarun Pranav RS:</strong> Slides 6 & 7 (Workflow & Real-World Impact)</div>
+            <div>• <strong>Varshini R:</strong> Slides 8 & 9 (Demo, Performance & Future Scope)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- High-tech robot graphic -->
+      <div class="robot-box">
+        <svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+          <ellipse cx="100" cy="290" rx="70" ry="10" fill="rgba(192,0,12,0.12)"/>
+          <rect x="65" y="220" width="28" height="65" rx="8" fill="#1e2229"/>
+          <rect x="107" y="220" width="28" height="65" rx="8" fill="#1e2229"/>
+          <rect x="62" y="275" width="34" height="14" rx="4" fill="#c0000c"/>
+          <rect x="104" y="275" width="34" height="14" rx="4" fill="#c0000c"/>
+          <rect x="50" y="115" width="100" height="105" rx="14" fill="#111827"/>
+          <rect x="58" y="125" width="84" height="85" rx="10" fill="#1f2937"/>
+          <rect x="70" y="138" width="60" height="34" rx="6" fill="#c0000c"/>
+          <text x="100" y="160" text-anchor="middle" font-size="12" font-weight="900" fill="#fff">AEGIS</text>
+          <rect x="64" y="186" width="72" height="4" rx="2" fill="#ef4444"/>
+          <rect x="72" y="196" width="56" height="3" rx="2" fill="#dc2626"/>
+          <rect x="16" y="125" width="30" height="75" rx="10" fill="#1e2229"/>
+          <rect x="154" y="125" width="30" height="75" rx="10" fill="#1e2229"/>
+          <rect x="12" y="185" width="38" height="16" rx="6" fill="#c0000c"/>
+          <rect x="150" y="185" width="38" height="16" rx="6" fill="#c0000c"/>
+          <rect x="85" y="98" width="30" height="20" rx="4" fill="#111827"/>
+          <rect x="50" y="32" width="100" height="70" rx="16" fill="#111827"/>
+          <rect x="56" y="38" width="88" height="58" rx="12" fill="#1f2937"/>
+          <rect x="62" y="46" width="76" height="26" rx="8" fill="#c0000c"/>
+          <ellipse cx="80" cy="59" rx="7" ry="5" fill="#ffffff"/>
+          <ellipse cx="120" cy="59" rx="7" ry="5" fill="#ffffff"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="ftr">
+      <div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span><span class="chev"></span></div><span>YHACK'26 — AI & COMPUTER VISION TRACK</span></div>
+      <div class="page-indicator">SLIDE 1 OF 10</div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 2: PROBLEM STATEMENT (Vaishnavi S)
+       ========================================== -->
+  <div class="slide" id="s2">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body">
+      <div class="banner-wrap">
+        <div class="section-banner"><span>Problem Statement</span></div>
+        <div class="speaker-badge">Speaker: Vaishnavi S</div>
+      </div>
+      <div class="slide-title">Security & Integrity Vulnerabilities in Air-Gapped Vision Pipelines</div>
+      <div class="two-col">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="card card-accent">
+            <div class="card-header">1. Data Layer Attack Vectors</div>
+            <div class="card-desc">
+              <ul>
+                <li><strong>Frequency Domain Backdoors:</strong> High-frequency checkerboard patterns and imperceptible trigger watermarks injected into training images.</li>
+                <li><strong>Annotation Corruption:</strong> Manipulated bounding boxes and inverted coordinates in COCO and YOLO label files.</li>
+                <li><strong>Duplicate Flooding:</strong> Near-duplicate sample injection that creates severe class bias in trained models.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <div class="card-header">2. Model Layer Threats</div>
+            <div class="card-desc">
+              <ul>
+                <li><strong>Model Substitution:</strong> A legitimate verified neural network is silently swapped with a compromised or backdoored weight file.</li>
+                <li><strong>Weight Drift & Mutation:</strong> Unauthorized fine-tuning altering classifier heads while leaving lower feature extraction intact.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="card card-accent">
+            <div class="card-header">3. Operational & Inference Threats</div>
+            <div class="card-desc">
+              <ul>
+                <li><strong>Distribution Drift:</strong> Real-world operational feeds departing significantly from training distribution (weather, lighting, sensor dirt).</li>
+                <li><strong>Post-Inference Tampering:</strong> Modification of saved detection logs, bounding boxes, or confidence records after execution.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card card-blue" style="background:#f0f7ff;border-color:#b8daff;">
+            <div class="card-header" style="color:#00629b;">The Air-Gapped Security Gap (The Core Challenge)</div>
+            <div class="card-desc" style="color:#1a365d;">
+              Critical computer vision systems (defense drones, autonomous robotics, nuclear inspection) operate in <strong>isolated, air-gapped environments</strong> with zero cloud connectivity.<br/><br/>
+              Existing safety solutions rely entirely on cloud APIs. There is currently <strong>no unified offline framework</strong> that cryptographically binds training data, neural weights, and inference outputs.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>PROBLEM STATEMENT & THREAT FORMULATION</span></div><div class="page-indicator">SLIDE 2 OF 10</div></div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 3: PROPOSED SOLUTION (Vaishnavi S)
+       ========================================== -->
+  <div class="slide" id="s3">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body">
+      <div class="banner-wrap">
+        <div class="section-banner"><span>Proposed Solution</span></div>
+        <div class="speaker-badge">Speaker: Vaishnavi S</div>
+      </div>
+      <div class="slide-title">AEGIS-CV: Unified Cross-Layer Offline Assurance Architecture</div>
+      <div class="two-col" style="margin-bottom:12px;">
+        <div class="card card-accent">
+          <div class="card-header">System Concept & Operation</div>
+          <div class="card-desc">
+            AEGIS-CV ingests 4 standard vision artifacts locally:
+            <ul>
+              <li><strong>Dataset:</strong> Training image directories and label annotations (COCO/YOLO).</li>
+              <li><strong>Model:</strong> Neural network weight files (ONNX, PyTorch .pt/.pth).</li>
+              <li><strong>Config:</strong> Pipeline hyperparameter specifications and class manifests.</li>
+              <li><strong>Inference Records:</strong> Operational runtime logs and detection boxes.</li>
+            </ul>
+            Executes 5 modular verification engines <strong>100% offline</strong>, yielding a deterministic composite risk score and tamper-evident audit receipt.
+          </div>
+        </div>
+        <div class="card card-accent">
+          <div class="card-header">Tri-State Automated Decision Engine</div>
+          <div class="card-desc">
+            Instead of ambiguous warnings, AEGIS-CV generates actionable operational triage commands:
+            <ul>
+              <li><span class="tag tag-green">ACCEPT</span> (Score 0–30): Pipeline mathematically verified authentic; cleared for operational deployment.</li>
+              <li><span class="tag tag-yellow">REVIEW</span> (Score 31–65): Moderate anomaly or distribution drift; flagged for human inspection.</li>
+              <li><span class="tag tag-red">QUARANTINE</span> (Score 66–100): Critical backdoor, weight mutation, or Merkle breach; execution blocked immediately.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:12px;font-weight:800;color:#c0000c;text-transform:uppercase;margin-bottom:4px;">Comparative Advantage Over Conventional Tools:</div>
+      <table class="table-std">
+        <thead>
+          <tr>
+            <th>Evaluation Dimension</th>
+            <th>Conventional Assurance Tools</th>
+            <th>AEGIS-CV Proposed Framework</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Air-Gapped Operation</strong></td>
+            <td>Requires external cloud telemetry or SaaS APIs</td>
+            <td><strong>100% Offline & Local (Zero network requests)</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Assurance Scope</strong></td>
+            <td>Fragmented point tools (data-only or model-only)</td>
+            <td><strong>Unified Cross-Layer: Data + Model + Drift + Ledger</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Cryptographic Provenance</strong></td>
+            <td>Ad-hoc file timestamps or basic checksums</td>
+            <td><strong>Hierarchical Merkle Tree + Chunked SHA-256</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Audit Logging</strong></td>
+            <td>Modifiable flat log files</td>
+            <td><strong>Tamper-Evident Chained Append-Only Ledger</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>PROPOSED ARCHITECTURAL SOLUTION</span></div><div class="page-indicator">SLIDE 3 OF 10</div></div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 4: TECHNICAL IMPLEMENTATION - PART 1 (Vaishnavi K)
+       ========================================== -->
+  <div class="slide" id="s4">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body">
+      <div class="banner-wrap">
+        <div class="section-banner"><span>Implementation</span></div>
+        <div class="speaker-badge">Speaker: Vaishnavi K</div>
+      </div>
+      <div class="slide-title">Core Engines: Data Assurance & Model Integrity</div>
+      <div class="two-col">
+        <!-- MODULE 1 -->
+        <div class="card card-accent" style="height:100%;">
+          <div class="card-header">Module 1: Data Assurance Engine</div>
+          <div class="card-desc">
+            <ul>
+              <li><strong>2D FFT Frequency Poison Scanner:</strong>
+                <br/>Computes 2D Fast Fourier Transform on training images:
+                $$F(u,v) = \sum_{x} \sum_{y} f(x,y) e^{-j2\pi(\frac{ux}{M}+\frac{vy}{N})}$$
+                Sub-perceptual backdoor triggers (BadNets, checkerboards) exhibit abnormal high-frequency energy ratios. Flags images where high-frequency energy ratio exceeds baseline (&gt; 0.38).
+              </li>
+              <li><strong>Perceptual dHash Duplicate Detection:</strong>
+                <br/>Resizes images to 9x8, computes adjacent horizontal pixel gradients, and constructs a 64-bit fingerprint to detect near-duplicate frames via Hamming distance.
+              </li>
+              <li><strong>Annotation Boundary Validation:</strong>
+                <br/>Strict format parsing for YOLO (validates $0.0 \le x,y,w,h \le 1.0$) and COCO bounding boxes. Rejects inverted coordinates and negative dimensions.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- MODULE 2 -->
+        <div class="card card-accent" style="height:100%;">
+          <div class="card-header">Module 2: Model Integrity Engine</div>
+          <div class="card-desc">
+            <ul>
+              <li><strong>Layer-by-Layer Weight Fingerprinting:</strong>
+                <br/>Dissects neural network weight tensors (e.g. <code>conv1.weight</code>, <code>features.dense</code>, <code>head.fc.bias</code>). Computes individual SHA-256 digests per layer.
+                <br/><br/>
+                <em>Capability:</em> When an unauthorized party fine-tunes or substitutes specific model layers, AEGIS-CV pinpoints the exact mutated layer rather than just reporting general corruption.
+              </li>
+              <li><strong>Black-Box Behavioral Fallback:</strong>
+                <br/>For encrypted or proprietary model architectures where weights cannot be inspected, AEGIS-CV probes the model with calibrated synthetic noise triggers and monitors output prediction flip rates.
+              </li>
+              <li><strong>Framework Agnostic:</strong>
+                <br/>Native support for ONNX graphs, PyTorch state dictionaries, and TorchScript models.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>DATA ASSURANCE & MODEL INTEGRITY MODULES</span></div><div class="page-indicator">SLIDE 4 OF 10</div></div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 5: TECHNICAL IMPLEMENTATION - PART 2 (Vaishnavi K)
+       ========================================== -->
+  <div class="slide" id="s5">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body">
+      <div class="banner-wrap">
+        <div class="section-banner"><span>Implementation</span></div>
+        <div class="speaker-badge">Speaker: Vaishnavi K</div>
+      </div>
+      <div class="slide-title">Modules 3, 4 & 5: Drift, Cryptographic Provenance & Risk Engine</div>
+      <div class="two-col">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <!-- MODULE 3 -->
+          <div class="card card-accent">
+            <div class="card-header">Module 3: Inference Drift & Authenticity</div>
+            <div class="card-desc">
+              <ul>
+                <li><strong>Operational Drift Detection:</strong> Tracks live camera confidence distributions and evaluates out-of-distribution (OOD) shift via statistical Z-score analysis ($Z &gt; 2.5$).</li>
+                <li><strong>Output Record Verification:</strong> Hashes saved bounding boxes and class scores to prove historical prediction logs were not manipulated post-generation.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- MODULE 4 -->
+          <div class="card card-accent">
+            <div class="card-header">Module 4: Cryptographic Provenance Chain</div>
+            <div class="card-desc">
+              <ul>
+                <li><strong>Hierarchical Merkle Tree:</strong>
+                  $$\text{SHA256}(\text{Dataset}) + \text{SHA256}(\text{Model}) + \text{SHA256}(\text{Config}) \rightarrow \text{Merkle Root}$$
+                </li>
+                <li><strong>Tamper-Evident Receipts:</strong> Signed locally via HMAC and stored in <code>receipts/pipeline_receipt.json</code>. A single altered byte in any artifact immediately breaks root validation.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE 5 -->
+        <div class="card card-accent" style="display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div class="card-header">Module 5: Composite Risk Scoring & Triage Matrix</div>
+            <div class="card-desc">
+              Synthesizes weighted anomaly penalties from all 4 upstream engines into a normalized 0 to 100 composite risk score:
+              $$R_{\text{total}} = w_d R_{\text{data}} + w_m R_{\text{model}} + w_i R_{\text{drift}} + w_p R_{\text{prov}}$$
+            </div>
+            <table class="table-std" style="margin-top:10px;">
+              <thead>
+                <tr>
+                  <th>Score Range</th>
+                  <th>Classification</th>
+                  <th>Action</th>
+                  <th>Operational Response</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>0 – 30</strong></td>
+                  <td>Low Risk</td>
+                  <td><span class="tag tag-green">ACCEPT</span></td>
+                  <td>Pipeline verified intact; live inference permitted.</td>
+                </tr>
+                <tr>
+                  <td><strong>31 – 65</strong></td>
+                  <td>Medium Risk</td>
+                  <td><span class="tag tag-yellow">REVIEW</span></td>
+                  <td>Potential drift or label anomaly; human review required.</td>
+                </tr>
+                <tr>
+                  <td><strong>66 – 100</strong></td>
+                  <td>Critical Risk</td>
+                  <td><span class="tag tag-red">QUARANTINE</span></td>
+                  <td>Backdoor, weight alteration, or root breach; execution halted.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:#fff3cd;border:1px solid #ffeeba;border-radius:4px;padding:6px 10px;font-size:11px;color:#856404;margin-top:8px;">
+            <strong>Audit Export:</strong> Auto-exports signed executive reports in JSON and standalone HTML for compliance auditing.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>DRIFT, CRYPTOGRAPHIC PROVENANCE & RISK TRIAGE</span></div><div class="page-indicator">SLIDE 5 OF 10</div></div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 6: WORKFLOW & CHAIRNED LEDGER (Tarun Pranav RS)
+       ========================================== -->
+  <div class="slide" id="s6">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body">
+      <div class="banner-wrap">
+        <div class="section-banner"><span>Architecture</span></div>
+        <div class="speaker-badge">Speaker: Tarun Pranav RS</div>
+      </div>
+      <div class="slide-title">Automated Verification Workflow & Chained Audit Ledger</div>
+      <div class="two-col">
+        <!-- WORKFLOW -->
+        <div class="card card-accent">
+          <div class="card-header">Six-Step Verification Lifecycle</div>
+          <div class="card-desc">
+            <ol style="padding-left:16px;line-height:1.6;">
+              <li><strong>Local Registration:</strong> Offline ingestion of Dataset, Model, Config, and Inference Logs.</li>
+              <li><strong>Chunked Streaming Hashing:</strong> 64KB block streaming computes SHA-256 digests with constant memory overhead.</li>
+              <li><strong>Multi-Vector Analysis:</strong> Concurrently triggers 2D FFT scan, layer weight comparison, and statistical drift profiling.</li>
+              <li><strong>Risk Score Aggregation:</strong> Normalizes penalties into a unified 0 to 100 composite risk score.</li>
+              <li><strong>Deterministic Triage:</strong> System enforces ACCEPT, REVIEW, or QUARANTINE action.</li>
+              <li><strong>Ledger Block Sealing:</strong> Appends cryptographically chained record into the audit ledger.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- CHAINED LEDGER -->
+        <div class="card card-accent">
+          <div class="card-header">Tamper-Evident Chained Audit Ledger</div>
+          <div class="card-desc">
+            Brings blockchain-grade tamper evidence to air-gapped system logs:
+            <ul>
+              <li><strong>Chained Block Structure:</strong> Stored in <code>receipts/audit_ledger.jsonl</code>. Each entry records <code>block_index</code>, <code>timestamp</code>, <code>merkle_root</code>, <code>risk_score</code>, <code>triage_action</code>, and the <code>previous_hash</code>.</li>
+              <li><strong>Backwards Validation:</strong> The ledger engine verifies block integrity across the entire historical chain. Any retroactive modification or record deletion breaks previous-hash continuity instantly.</li>
+              <li><strong>Zero Cloud Stack:</strong> Python 3.13, NumPy, Pillow, PyTorch, ONNX Runtime, Streamlit, hashlib, hmac. Fully self-contained.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORKFLOW DIAGRAM STRIP -->
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:14px;">
+        <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;padding:6px;text-align:center;">
+          <div style="font-size:10px;font-weight:800;color:#c0000c;">STEP 1</div>
+          <div style="font-size:10px;font-weight:700;color:#333;">Asset Ingestion</div>
+        </div>
+        <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;padding:6px;text-align:center;">
+          <div style="font-size:10px;font-weight:800;color:#c0000c;">STEP 2</div>
+          <div style="font-size:10px;font-weight:700;color:#333;">SHA-256 Merkle</div>
+        </div>
+        <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;padding:6px;text-align:center;">
+          <div style="font-size:10px;font-weight:800;color:#c0000c;">STEP 3</div>
+          <div style="font-size:10px;font-weight:700;color:#333;">2D FFT & Drift</div>
+        </div>
+        <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;padding:6px;text-align:center;">
+          <div style="font-size:10px;font-weight:800;color:#c0000c;">STEP 4</div>
+          <div style="font-size:10px;font-weight:700;color:#333;">Composite Risk</div>
+        </div>
+        <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;padding:6px;text-align:center;">
+          <div style="font-size:10px;font-weight:800;color:#c0000c;">STEP 5</div>
+          <div style="font-size:10px;font-weight:700;color:#333;">Triage Decision</div>
+        </div>
+        <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;padding:6px;text-align:center;">
+          <div style="font-size:10px;font-weight:800;color:#c0000c;">STEP 6</div>
+          <div style="font-size:10px;font-weight:700;color:#333;">Ledger Sealing</div>
+        </div>
+      </div>
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>WORKFLOW & TAMPER-EVIDENT AUDIT LEDGER</span></div><div class="page-indicator">SLIDE 6 OF 10</div></div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 7: REAL-WORLD IMPACT (Tarun Pranav RS) - REVIEW 3 FOCUS
+       ========================================== -->
+  <div class="slide" id="s7">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body">
+      <div class="banner-wrap">
+        <div class="section-banner"><span>Real-World Impact</span></div>
+        <div class="speaker-badge">Speaker: Tarun Pranav RS</div>
+      </div>
+      <div class="slide-title">Review 3 Criterion: Industrial Applicability Across Critical Infrastructure</div>
+      <div class="two-col">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="card card-accent">
+            <div class="card-header">1. Defense & Tactical Unmanned Systems (UAVs)</div>
+            <div class="card-desc">
+              Drones operating in radio-silence, GPS-denied environments require local assurance. AEGIS-CV guarantees target classification models have not been poisoned by adversarial supply-chain backdoors before mission launch.
+            </div>
+          </div>
+          <div class="card card-accent">
+            <div class="card-header">2. Autonomous Vehicle Perception Validation</div>
+            <div class="card-desc">
+              Validates camera perception pipelines against sensor lens occlusion, adverse weather shifts, and distribution drift before autonomous dispatch, preventing catastrophic edge-case failures.
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="card card-accent">
+            <div class="card-header">3. Critical Industrial & Nuclear Inspection</div>
+            <div class="card-desc">
+              Regulated manufacturing plants and nuclear facilities enforce strict zero-cloud policies. AEGIS-CV delivers verifiable regulatory compliance reports without risking intellectual property or visual data leaks.
+            </div>
+          </div>
+          <div class="card card-accent">
+            <div class="card-header">4. Medical Imaging Assurance</div>
+            <div class="card-desc">
+              Verifies that MRI and CT automated diagnostic neural networks remain authentic, uncorrupted, and aligned with baseline clinical certification standards.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#f8f9fa;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin-top:12px;">
+        <div style="font-size:11px;font-weight:800;color:#c0000c;text-transform:uppercase;margin-bottom:3px;">Zero-Trust Edge Deployment Capability:</div>
+        <div style="font-size:11px;color:#333;line-height:1.5;">
+          AEGIS-CV has a lightweight compute footprint, allowing native execution directly on edge embedded hardware (NVIDIA Jetson AGX/Orin, Raspberry Pi 5, or industrial edge servers) without specialized cloud infrastructure.
+        </div>
+      </div>
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>REVIEW 3 CRITERION: REAL-WORLD IMPACT & APPLICABILITY</span></div><div class="page-indicator">SLIDE 7 OF 10</div></div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 8: WORKING DEMONSTRATION & PERFORMANCE (Varshini R) - REVIEW 3 FOCUS
+       ========================================== -->
+  <div class="slide" id="s8">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body">
+      <div class="banner-wrap">
+        <div class="section-banner"><span>Working Demo</span></div>
+        <div class="speaker-badge">Speaker: Varshini R</div>
+      </div>
+      <div class="slide-title">Review 3 Criteria: Functionality, Performance & Working Demonstration</div>
+      <div class="two-col">
+        <!-- DEMONSTRATION DEPLOYMENT -->
+        <div class="card card-accent">
+          <div class="card-header">Dual Working Demonstration Deployment</div>
+          <div class="card-desc">
+            <ul>
+              <li><strong>1. Global Cloud Interactive Dashboard:</strong>
+                <br/>Live globally at: <code>yhack26ys504glitch-yjp6jzczg7cvup2rmfg7rv.streamlit.app</code>
+                <br/>Features 2D FFT heatmap viewers, live threat simulation sliders, interactive chained ledger verification, and executive HTML report exports.
+              </li>
+              <li><strong>2. 100% Air-Gapped Local Launcher:</strong>
+                <br/>Single-click offline launch via <code>launch_dashboard.bat</code> and automated multi-module CLI engine <code>run_aegis.py</code>.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- PERFORMANCE BENCHMARKS -->
+        <div class="card card-accent">
+          <div class="card-header">Empirical Performance Benchmarks</div>
+          <div class="card-desc">
+            <ul>
+              <li><strong>Automated Test Suite:</strong> 12 comprehensive unit tests passing in <strong>0.02 seconds</strong> (covering Merkle trees, 2D FFT, drift, ledger, and triage).</li>
+              <li><strong>Spectral Scan Speed:</strong> Sub-15 milliseconds per image for 2D FFT poison detection.</li>
+              <li><strong>Streaming Hash Throughput:</strong> 64KB block chunking processes multi-gigabyte models with constant, near-zero memory footprint ($O(1)$ memory usage).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMPIRICAL TEST RESULTS -->
+      <div style="font-size:12px;font-weight:800;color:#c0000c;text-transform:uppercase;margin:12px 0 4px 0;">Live System Verification Scenarios:</div>
+      <table class="table-std">
+        <thead>
+          <tr>
+            <th>Evaluated Scenario</th>
+            <th>Data Status</th>
+            <th>Model Status</th>
+            <th>Drift & Merkle Status</th>
+            <th>Composite Score & Decision</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Clean Baseline Pipeline</strong></td>
+            <td>FFT ratio 0.1302 (&le; 0.38)</td>
+            <td>3/3 Layers verified intact</td>
+            <td>Z-score 0.12, Merkle valid</td>
+            <td><strong style="color:#137333;">Score: 0 / 100 &rarr; ACCEPT [CLEARED]</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Multi-Vector Threat Attack</strong></td>
+            <td>FFT ratio 0.5875 (&gt; 0.38) POISON</td>
+            <td>Layer <code>head.fc</code> altered</td>
+            <td>Z-score 5.25, Root broken</td>
+            <td><strong style="color:#c5221f;">Score: 75 / 100 &rarr; QUARANTINE [BLOCKED]</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>REVIEW 3 CRITERIA: FUNCTIONALITY, PERFORMANCE & WORKING DEMO</span></div><div class="page-indicator">SLIDE 8 OF 10</div></div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 9: INNOVATION, SCALABILITY & FUTURE SCOPE (Varshini R) - REVIEW 3 FOCUS
+       ========================================== -->
+  <div class="slide" id="s9">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body">
+      <div class="banner-wrap">
+        <div class="section-banner"><span>Innovation & Scope</span></div>
+        <div class="speaker-badge">Speaker: Varshini R</div>
+      </div>
+      <div class="slide-title">Review 3 Criteria: Innovation, Scalability, Future Scope & Verdict</div>
+      <div class="two-col">
+        <!-- INNOVATION -->
+        <div class="card card-accent">
+          <div class="card-header">Innovation & Technical Differentiation</div>
+          <div class="card-desc">
+            <ul>
+              <li><strong>Unified Cross-Layer Merkle Provenance:</strong> First assurance architecture cryptographically linking training data, weight tensors, and operational drift under a single root digest.</li>
+              <li><strong>Spectral Fourier Poison Probing:</strong> Detects sub-perceptual pixel triggers mathematically without requiring compute-intensive model retraining.</li>
+              <li><strong>Tamper-Chained Audit Ledger:</strong> Implements immutable, block-chained verification for air-gapped system logs without blockchain overhead.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- SCALABILITY & FUTURE SCOPE -->
+        <div class="card card-accent">
+          <div class="card-header">Scalability & Future Scope</div>
+          <div class="card-desc">
+            <ul>
+              <li><strong>Petabyte-Scale Dataset Streaming:</strong> Chunked multi-threaded streaming architecture scales seamlessly to massive production datasets.</li>
+              <li><strong>Hardware Root of Trust Integration:</strong> Roadmap to bind Merkle roots directly into hardware TPM 2.0 and HSM modules on edge devices.</li>
+              <li><strong>Automated Dataset Poison Scrubbing:</strong> Roadmap to automatically isolate and excise high-frequency poison samples from training corpora.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW 3 SUMMARY VERDICT -->
+      <div style="background:#f8f9fa;border:1px solid #e2e8f0;border-left:4px solid #137333;border-radius:4px;padding:10px 14px;margin-top:14px;">
+        <div style="font-size:11.5px;font-weight:800;color:#137333;text-transform:uppercase;margin-bottom:3px;">Review 3 Deliverables Verdict:</div>
+        <div style="font-size:11.5px;color:#333;line-height:1.5;">
+          AEGIS-CV provides a <strong>complete, fully functional, mathematically verified assurance system</strong>. All Review 3 criteria—Functionality & Performance, Working Demonstration, Real-World Applicability, Technical Innovation, and Scalability—have been fully realized and proven.
+        </div>
+      </div>
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>REVIEW 3 CRITERIA: INNOVATION, SCALABILITY & FUTURE SCOPE</span></div><div class="page-indicator">SLIDE 9 OF 10</div></div>
+  </div>
+
+  <!-- ==========================================
+       SLIDE 10: THANK YOU & Q&A
+       ========================================== -->
+  <div class="slide" id="s10">
+    <div class="hdr"><div class="hdr-logos"><div class="logo-card"><div class="kpr-text">KPR Institute of Technology</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ieee-text">IEEE</span></div><div class="hdr-divider"></div><div class="logo-card"><div class="ras-text">Robotics & Automation Society</div></div><div class="hdr-divider"></div><div class="logo-card"><span class="ausweg-text">ausweg</span></div><div class="hdr-divider"></div><div class="logo-card"><span class="robotai-text">RobotaAI</span></div></div><div class="yhack-badge"><span class="yhack-y">Y</span><span class="yhack-text">HACK'</span><span class="yhack-26">26</span></div></div>
+    <div class="slide-body" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:30px 48px;">
+      
+      <!-- Left side: Robot from template -->
+      <div style="width:240px;height:360px;">
+        <svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+          <ellipse cx="100" cy="290" rx="70" ry="10" fill="rgba(192,0,12,0.12)"/>
+          <rect x="65" y="220" width="28" height="65" rx="8" fill="#1e2229"/>
+          <rect x="107" y="220" width="28" height="65" rx="8" fill="#1e2229"/>
+          <rect x="62" y="275" width="34" height="14" rx="4" fill="#c0000c"/>
+          <rect x="104" y="275" width="34" height="14" rx="4" fill="#c0000c"/>
+          <rect x="50" y="115" width="100" height="105" rx="14" fill="#111827"/>
+          <rect x="58" y="125" width="84" height="85" rx="10" fill="#1f2937"/>
+          <rect x="70" y="138" width="60" height="34" rx="6" fill="#c0000c"/>
+          <text x="100" y="160" text-anchor="middle" font-size="12" font-weight="900" fill="#fff">AEGIS</text>
+          <rect x="50" y="32" width="100" height="70" rx="16" fill="#111827"/>
+          <rect x="62" y="46" width="76" height="26" rx="8" fill="#c0000c"/>
+          <ellipse cx="80" cy="59" rx="7" ry="5" fill="#ffffff"/>
+          <ellipse cx="120" cy="59" rx="7" ry="5" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <!-- Center & Right: Script Thank You text & Project details -->
+      <div style="flex:1;padding-left:40px;">
+        <div style="font-family:'Brush Script MT',cursive,sans-serif;font-size:72px;color:#111827;line-height:1;margin-bottom:10px;">Thank you</div>
+        <div style="font-size:16px;font-weight:800;color:#c0000c;letter-spacing:1px;margin-bottom:18px;">AEGIS-CV: TRUST EVERY PIXEL. VERIFY EVERY MODEL.</div>
+        
+        <div style="background:#f8f9fa;border:1px solid #e2e8f0;border-radius:6px;padding:14px 18px;margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:800;color:#111827;margin-bottom:6px;">TEAM GLITCH (YS504)</div>
+          <div style="font-size:12px;color:#475569;margin-bottom:4px;">Vaishnavi S &bull; Vaishnavi K &bull; Tarun Pranav RS &bull; Varshini R</div>
+          <div style="font-size:11.5px;color:#00629b;font-weight:600;margin-top:6px;">GitHub: github.com/Vaishnavi-Krishnamoorthy/YHACK26_YS504_GLITCH</div>
+          <div style="font-size:11.5px;color:#c0000c;font-weight:600;margin-top:2px;">Live Demo: yhack26ys504glitch-yjp6jzczg7cvup2rmfg7rv.streamlit.app</div>
+        </div>
+
+        <div style="font-size:14px;font-weight:700;color:#1e293b;">
+          Open for Technical Questions from the Evaluation Committee
+        </div>
+      </div>
+
+    </div>
+    <div class="ftr"><div class="ftr-left"><div class="chevrons"><span class="chev"></span><span class="chev"></span></div><span>YHACK'26 — CHALLENGE 22 CONCLUSION</span></div><div class="page-indicator">SLIDE 10 OF 10</div></div>
+  </div>
+
+</div>
+
+<!-- NAVIGATION BAR -->
+<div class="nav-bar">
+  <button class="btn-nav" id="btnPrev" onclick="prevSlide()">&#8592; Previous</button>
+  <div class="dots" id="dotsContainer"></div>
+  <div class="kbd-hint">Use <strong>Left / Right Arrow</strong> keys or click buttons to navigate</div>
+  <button class="btn-nav" id="btnNext" onclick="nextSlide()">Next &#8594;</button>
+</div>
+
+<script>
+  let currentSlide = 1;
+  const totalSlides = 10;
+
+  function initDots() {
+    const container = document.getElementById('dotsContainer');
+    container.innerHTML = '';
+    for (let i = 1; i <= totalSlides; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 1 ? ' active' : '');
+      dot.onclick = () => goToSlide(i);
+      container.appendChild(dot);
+    }
+  }
+
+  function updateSlide() {
+    for (let i = 1; i <= totalSlides; i++) {
+      const el = document.getElementById('s' + i);
+      if (el) el.classList.remove('active');
+    }
+    const current = document.getElementById('s' + currentSlide);
+    if (current) current.classList.add('active');
+
+    // Update dots
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === currentSlide - 1);
+    });
+
+    document.getElementById('btnPrev').disabled = currentSlide === 1;
+    document.getElementById('btnNext').disabled = currentSlide === totalSlides;
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides) {
+      currentSlide++;
+      updateSlide();
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 1) {
+      currentSlide--;
+      updateSlide();
+    }
+  }
+
+  function goToSlide(n) {
+    currentSlide = n;
+    updateSlide();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+      prevSlide();
+    }
+  });
+
+  initDots();
+  updateSlide();
+</script>
+</body>
+</html>
