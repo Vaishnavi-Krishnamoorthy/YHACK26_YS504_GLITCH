@@ -27,24 +27,25 @@ Computer vision models deployed in high-consequence offline or air-gapped enviro
 
 ---
 
-## Architecture: 5 Integrated Modules
+## Architecture: 5 Integrated Modules & Standard Format Support
 
 ```
-[INPUT DATA]             [AEGIS-CV ENGINES]                     [OUTPUT]
-COCO Dataset     ──►  1. Data Assurance (FFT Poison, dHash) ──┐
-Model Weights    ──►  2. Model Integrity (Layer Hashes)     ──┼─► 5. Risk Engine
-Inference Logs   ──►  3. Inference Drift (OOD Z-Score)      ──┤      (0-100 Score)
-Pipeline Config  ──►  4. Crypto Provenance (Merkle Tree)    ──┘      ACCEPT / QUARANTINE
-                                                                     Audit Report (.json)
+[INPUT DATA & FORMATS]             [AEGIS-CV ENGINES]                     [OUTPUT]
+COCO (.json) / YOLO (.txt)  ──►  1. Data Assurance (FFT Poison, dHash) ──┐
+ONNX (.onnx) / PyTorch (.bin)──► 2. Model Integrity (Layer Hashes)     ──┼─► 5. Risk Engine
+Inference Logs (.json)      ──►  3. Inference Drift (OOD Z-Score)      ──┤      (0-100 Score)
+Pipeline Config (.json)     ──►  4. Crypto Provenance (Merkle Tree)    ──┘      ACCEPT / QUARANTINE
+                                                                             Audit Report (.json)
 ```
 
-| Module | File | Implementation Technique |
-|---|---|---|
-| **Module 1: Data Assurance** | `aegis/data_assurance.py` | 2D Fast Fourier Transform (FFT) high-frequency trigger scanner + perceptual difference hashing (dHash) |
-| **Module 2: Model Integrity** | `aegis/model_integrity.py` | Layer-by-layer SHA-256 fingerprinting + substitution detection + behavioral probing |
-| **Module 3: Inference Drift** | `aegis/inference_drift.py` | Operational confidence distribution shift (Z-score OOD) + output record hashing |
-| **Module 4: Crypto Provenance**| `aegis/provenance.py` | Hierarchical Merkle tree + offline HMAC-SHA256 signed audit receipts |
-| **Module 5: Risk Engine** | `aegis/risk_engine.py` | Weighted composite risk scoring (0-100) + triage recommendations + JSON audit report |
+| Module / Component | File | Supported Formats | Implementation Technique |
+|---|---|---|---|
+| **Module 1: Data Assurance** | `aegis/data_assurance.py`<br>`aegis/formats/yolo_parser.py` | **COCO** (`.json`)<br>**YOLO** (`.txt`) | 2D Fast Fourier Transform (FFT) high-frequency trigger scanner + perceptual difference hashing (dHash) + normalized bbox bounds and degenerate box validator |
+| **Module 2: Model Integrity** | `aegis/model_integrity.py`<br>`aegis/formats/onnx_inspector.py` | **ONNX** (`.onnx`)<br>**PyTorch** (`.pt`/`.bin`) | Layer-by-layer SHA-256 fingerprinting + ONNX graph/node inspection + layer substitution detection + behavioral probing |
+| **Module 3: Inference Drift** | `aegis/inference_drift.py` | Inference logs (`.json`) | Operational confidence distribution shift (Z-score OOD) + output record hashing |
+| **Module 4: Crypto Provenance**| `aegis/provenance.py` | Multi-asset manifest | Hierarchical Merkle tree + offline HMAC-SHA256 signed audit receipts |
+| **Module 5: Risk Engine** | `aegis/risk_engine.py` | Unified risk reports | Weighted composite risk scoring (0-100) + triage recommendations + JSON audit report |
+
 
 ---
 
@@ -83,7 +84,7 @@ python provenance_chain.py
 ```
 YHACK26_YS504_GLITCH/
 ├── README.md               # Project documentation & usage
-├── requirements.txt        # Offline dependencies (numpy, Pillow, streamlit, matplotlib)
+├── requirements.txt        # Offline dependencies (numpy, Pillow, streamlit, matplotlib, onnx)
 ├── app.py                  # 🌟 Interactive Streamlit Web Dashboard
 ├── run_aegis.py            # Master CLI runner for Review 2 (all 5 modules)
 ├── provenance_chain.py     # Standalone provenance & Merkle demo (Review 1)
@@ -93,10 +94,19 @@ YHACK26_YS504_GLITCH/
 │   ├── model_integrity.py  # Module 2: Layer-wise weight fingerprinting
 │   ├── inference_drift.py  # Module 3: Distribution drift & output integrity
 │   ├── provenance.py       # Module 4: Cryptographic Merkle tree engine
-│   └── risk_engine.py      # Module 5: Composite scoring & triage logic
+│   ├── risk_engine.py      # Module 5: Composite scoring & triage logic
+│   └── formats/            # Vision format parsers & inspectors
+│       ├── __init__.py
+│       ├── yolo_parser.py     # YOLO bbox parsing & geometry validation
+│       └── onnx_inspector.py  # ONNX model inspection & layer substitution checks
 ├── sample_data/            # Test assets
 │   ├── sample_images/      # Clean, duplicate, and FFT poisoned images
 │   ├── dataset_coco_sample.json
+│   ├── dataset_yolo_sample.txt
+│   ├── dataset_yolo_corrupt.txt
+│   ├── dataset_yolo_empty.txt
+│   ├── vision_model.onnx
+│   ├── vision_model_tampered.onnx
 │   ├── vision_model_weights.bin
 │   ├── pipeline_config.json
 │   └── inference_records.json

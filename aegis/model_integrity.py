@@ -77,3 +77,13 @@ def blackbox_behavioral_probe(predict_fn, clean_samples, trigger_samples):
         "suspicious_backdoor_behavior": suspicious,
         "status": "SUSPECTED_BACKDOOR" if suspicious else "NORMAL"
     }
+
+
+def verify_onnx_integrity(model_path, baseline_fingerprints):
+    """
+    Verifies ONNX model against known layer fingerprints (Module 2).
+    Delegates to aegis.formats.onnx_inspector.
+    """
+    from aegis.formats.onnx_inspector import verify_onnx_layers
+    return verify_onnx_layers(model_path, baseline_fingerprints)
+
