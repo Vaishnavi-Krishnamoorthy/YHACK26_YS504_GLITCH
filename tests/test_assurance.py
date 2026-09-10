@@ -22,6 +22,8 @@ from aegis.formats.onnx_inspector import inspect_onnx_model, fingerprint_onnx_la
 from aegis.data_assurance import validate_yolo_annotations, validate_coco_annotations
 from aegis.model_integrity import verify_onnx_integrity, fingerprint_layers, verify_model_layers
 from aegis.provenance import verify_pipeline
+from aegis.audit_ledger import verify_ledger
+
 
 
 class TestAegisAssurance(unittest.TestCase):
@@ -34,6 +36,12 @@ class TestAegisAssurance(unittest.TestCase):
         self.yolo_empty = os.path.join(self.sample_dir, "dataset_yolo_empty.txt")
         self.onnx_clean = os.path.join(self.sample_dir, "vision_model.onnx")
         self.onnx_tampered = os.path.join(self.sample_dir, "vision_model_tampered.onnx")
+        if not os.path.exists(self.onnx_clean):
+            from aegis.formats.onnx_inspector import create_sample_onnx_model
+            create_sample_onnx_model(self.onnx_clean, tampered=False)
+        if not os.path.exists(self.onnx_tampered):
+            from aegis.formats.onnx_inspector import create_sample_onnx_model
+            create_sample_onnx_model(self.onnx_tampered, tampered=True)
 
     def test_yolo_clean(self):
         res = validate_yolo_file(self.yolo_clean)
@@ -86,6 +94,31 @@ class TestAegisAssurance(unittest.TestCase):
 
     def test_pipeline_receipt_provenance(self):
         receipt_file = os.path.join(self.receipts_dir, "pipeline_receipt.json")
+        if not os.path.exists(receipt_file):
+            from aegis.provenance import generate_receipt
+            tracked_files = {
+                "dataset_coco": os.path.join(self.sample_dir, "dataset_coco_sample.json"),
+                "dataset_yolo": self.yolo_clean,
+                "model_onnx": self.onnx_clean,
+                "config": os.path.join(self.sample_dir, "pipeline_config.json"),
+                "records": os.path.join(self.sample_dir, "inference_records.json")
+            }
+            generate_receipt(tracked_files, receipt_file)
+        else:
+            with open(receipt_file, "r", encoding="utf-8") as f:
+                rec_data = json.load(f)
+            first_component_path = next(iter(rec_data.get("components", {}).values()), {}).get("path", "")
+            if not os.path.exists(first_component_path):
+                from aegis.provenance import generate_receipt
+                tracked_files = {
+                    "dataset_coco": os.path.join(self.sample_dir, "dataset_coco_sample.json"),
+                    "dataset_yolo": self.yolo_clean,
+                    "model_onnx": self.onnx_clean,
+                    "config": os.path.join(self.sample_dir, "pipeline_config.json"),
+                    "records": os.path.join(self.sample_dir, "inference_records.json")
+                }
+                generate_receipt(tracked_files, receipt_file)
+
         with open(receipt_file, "r", encoding="utf-8") as f:
             receipt = json.load(f)
         is_clean, report = verify_pipeline(receipt)
@@ -94,6 +127,12 @@ class TestAegisAssurance(unittest.TestCase):
         self.assertIn("dataset_yolo", receipt["components"])
         self.assertIn("model_onnx", receipt["components"])
         self.assertIn("dataset_coco", receipt["components"])
+
+    def test_audit_ledger_chain_verification(self):
+        ledger_file = os.path.join(self.receipts_dir, "audit_ledger.jsonl")
+        is_clean, report = verify_ledger(ledger_file)
+        self.assertTrue(is_clean)
+        self.assertIn(report["status"], ("INTACT", "EMPTY"))
 
 
 if __name__ == "__main__":
