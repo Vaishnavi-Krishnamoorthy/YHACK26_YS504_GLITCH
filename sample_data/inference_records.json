@@ -1,0 +1,17 @@
+[
+  {
+    "frame_id": "frame_001.jpg",
+    "timestamp": "2026-09-10T10:00:00Z",
+    "detections": [
+      {"class": "person", "confidence": 0.94, "bbox": [120, 240, 50, 110]},
+      {"class": "vehicle", "confidence": 0.88, "bbox": [530, 180, 200, 95]}
+    ]
+  },
+  {
+    "frame_id": "frame_002.jpg",
+    "timestamp": "2026-09-10T10:00:01Z",
+    "detections": [
+      {"class": "person", "confidence": 0.91, "bbox": [125, 238, 48, 112]}
+    ]
+  }
+]

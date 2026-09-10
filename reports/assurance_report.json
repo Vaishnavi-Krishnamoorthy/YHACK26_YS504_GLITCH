@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-09-10T14:44:09.908924+00:00",
+  "composite_risk_score": 75,
+  "recommendation": "QUARANTINE",
+  "status_color": "RED",
+  "flags_raised": [
+    "Model layer substitution detected (weight hash mismatch)",
+    "High-frequency FFT trigger pattern detected in training data",
+    "1 duplicate/near-duplicate image pair(s) found",
+    "Distribution shift detected in operational confidence scores"
+  ],
+  "module_breakdown": {
+    "provenance": "PASS",
+    "model_integrity": "FAIL",
+    "data_assurance": "POISON_DETECTED",
+    "inference_drift": "DRIFT_DETECTED"
+  },
+  "limitations": [
+    "Evaluated in air-gapped mode using local signatures.",
+    "Black-box probing is probabilistic and requires representative test probes."
+  ]
+}
