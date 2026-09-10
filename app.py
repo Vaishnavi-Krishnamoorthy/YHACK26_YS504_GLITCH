@@ -15,6 +15,7 @@ Professional Defense Console:
 """
 
 import os
+import time
 import json
 import shutil
 import hashlib
@@ -136,16 +137,44 @@ st.markdown("""
     color: #f59e0b;
     background: rgba(245, 158, 11, 0.08);
   }
+  /* Keyframe Animations */
+  @keyframes radarPulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+  @keyframes radarPulseRed {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 7px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .enterprise-header, .triage-panel, .score-card, .telemetry-row, [data-testid="stMetric"], .stTabs {
+    animation: fadeInUp 0.4s ease-out forwards;
+  }
+
   .status-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     display: inline-block;
   }
-  .dot-green { background: #10b981; }
-  .dot-red { background: #ef4444; }
+  .dot-green { background: #10b981; animation: radarPulse 1.8s infinite; }
+  .dot-red { background: #ef4444; animation: radarPulseRed 1.4s infinite; }
   .dot-yellow { background: #f59e0b; }
   .dot-blue { background: #3b82f6; }
+
+  .triage-panel, .score-card, [data-testid="stMetric"] {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .triage-panel:hover, .score-card:hover, [data-testid="stMetric"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5);
+  }
 
   /* Triage Cards */
   .triage-panel {
@@ -289,10 +318,12 @@ with st.sidebar:
 
     if st.session_state["current_scenario"] != scenario:
         st.session_state["has_audited"] = False
+        st.session_state["show_scan_anim"] = False
         st.session_state["current_scenario"] = scenario
 
     if run_btn:
         st.session_state["has_audited"] = True
+        st.session_state["show_scan_anim"] = True
 
     st.markdown("---")
     st.markdown("""
@@ -452,8 +483,39 @@ else:
         with col_c2:
             if st.button("EXECUTE PIPELINE AUDIT SCAN", type="primary", use_container_width=True):
                 st.session_state["has_audited"] = True
+                st.session_state["show_scan_anim"] = True
                 st.rerun()
         st.stop()
+
+    # Live Tactical Cyber Scanning Sequence Animation
+    if st.session_state.get("show_scan_anim", False):
+        scan_container = st.container()
+        with scan_container:
+            st.markdown("""
+            <div style="background: #090d16; border: 1px solid #1e293b; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 18px 22px; margin: 10px 0 20px 0;">
+              <div style="font-size: 11px; font-weight: 700; color: #38bdf8; font-family: monospace; letter-spacing: 0.8px;">[SYSTEM AUDIT IN PROGRESS]</div>
+              <div style="font-size: 16px; font-weight: 800; color: #ffffff; margin: 4px 0 0 0;">Executing Cross-Layer Computer Vision Assurance Pipeline...</div>
+            </div>
+            """, unsafe_allow_html=True)
+            scan_progress = st.progress(0)
+            status_box = st.empty()
+
+            tactical_steps = [
+                (20, "[01/05] Hashing COCO & YOLO annotations in 64KB blocks..."),
+                (40, "[02/05] Computing 2D Fast Fourier Transform frequency spectra..."),
+                (65, "[03/05] Fingerprinting PyTorch & ONNX layer weight tensors..."),
+                (85, "[04/05] Assembling Merkle provenance tree & verifying local HMAC..."),
+                (100, "[05/05] Aggregating composite risk index & synchronizing chained ledger...")
+            ]
+            for pct, msg in tactical_steps:
+                status_box.markdown(f"<div style='font-family: monospace; font-size: 12px; color: #94a3b8; background: #0f172a; padding: 7px 12px; border-radius: 4px; border-left: 3px solid #3b82f6; margin-bottom: 6px;'>{msg}</div>", unsafe_allow_html=True)
+                scan_progress.progress(pct)
+                time.sleep(0.18)
+
+            time.sleep(0.1)
+            scan_progress.empty()
+            status_box.empty()
+            st.session_state["show_scan_anim"] = False
 
     is_attack = (scenario == "Threat Simulation (Multi-Vector Attack)")
 
