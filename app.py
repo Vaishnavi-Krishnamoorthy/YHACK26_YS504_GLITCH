@@ -281,6 +281,19 @@ with st.sidebar:
     st.markdown("---")
     run_btn = st.button("RUN PIPELINE AUDIT", type="primary", use_container_width=True)
 
+    # Session State Management so audit runs ONLY when button is clicked or state is active
+    if "has_audited" not in st.session_state:
+        st.session_state["has_audited"] = False
+    if "current_scenario" not in st.session_state:
+        st.session_state["current_scenario"] = scenario
+
+    if st.session_state["current_scenario"] != scenario:
+        st.session_state["has_audited"] = False
+        st.session_state["current_scenario"] = scenario
+
+    if run_btn:
+        st.session_state["has_audited"] = True
+
     st.markdown("---")
     st.markdown("""
     <div style='font-size: 11px; color: #64748b; font-family: monospace;'>
@@ -423,6 +436,25 @@ if scenario == "Custom File Diagnostics":
 # ROUTING: BASELINE OR THREAT SIMULATION
 # =============================================================================
 else:
+    if not st.session_state.get("has_audited", False):
+        st.markdown(f"""
+        <div style="background: #090d16; border: 1px solid #1e293b; border-radius: 8px; padding: 40px 30px; text-align: center; margin: 30px 0;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 1px; text-transform: uppercase;">[SYSTEM STATUS: STANDBY]</div>
+          <div style="font-size: 24px; font-weight: 800; color: #ffffff; margin: 10px 0;">Pipeline Staged &amp; Ready for Cryptographic Audit</div>
+          <div style="font-size: 13.5px; color: #94a3b8; max-width: 620px; margin: 0 auto 24px auto; line-height: 1.6;">
+            Target Scenario: <strong style="color: #ffffff;">{scenario}</strong><br>
+            Artifacts staged: COCO annotations, YOLO labels, ONNX model graph, and pipeline configuration.<br>
+            Click below or use the sidebar button to initiate real-time verification.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+        col_c1, col_c2, col_c3 = st.columns([1, 1.5, 1])
+        with col_c2:
+            if st.button("EXECUTE PIPELINE AUDIT SCAN", type="primary", use_container_width=True):
+                st.session_state["has_audited"] = True
+                st.rerun()
+        st.stop()
+
     is_attack = (scenario == "Threat Simulation (Multi-Vector Attack)")
 
     coco_json = os.path.join(SAMPLE_DIR, "dataset_coco_sample.json")
