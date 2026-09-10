@@ -38,6 +38,7 @@ from aegis.formats.onnx_inspector import (
     verify_onnx_layers,
     create_sample_onnx_model
 )
+from aegis.reporting import generate_html_report
 
 
 def generate_sample_images(image_dir):
@@ -287,11 +288,15 @@ def main():
     if os.path.exists(tampered_demo_path):
         os.remove(tampered_demo_path)
 
-    # Export report to reports/assurance_report.json
+    # Export reports to reports/assurance_report.json and .html
     report_file = os.path.join(reports_dir, "assurance_report.json")
+    html_report_file = os.path.join(reports_dir, "assurance_report.html")
     with open(report_file, "w", encoding="utf-8") as f:
         json.dump(attack_decision, f, indent=2)
-    print(f"\n[Done] Full audit report exported to {os.path.relpath(report_file, base_dir)}")
+    generate_html_report(attack_decision, html_report_file)
+    print(f"\n[Done] Full audit reports exported to:")
+    print(f"  * JSON: {os.path.relpath(report_file, base_dir)}")
+    print(f"  * HTML: {os.path.relpath(html_report_file, base_dir)} (Print-to-PDF ready)")
 
 
 if __name__ == "__main__":

@@ -22,6 +22,7 @@ from aegis.data_assurance import scan_duplicates, detect_frequency_poison, valid
 from aegis.model_integrity import fingerprint_layers, verify_model_layers
 from aegis.inference_drift import detect_confidence_drift, verify_inference_records
 from aegis.risk_engine import evaluate_risk
+from aegis.reporting import generate_html_report
 
 # Page Configuration
 st.set_page_config(
@@ -327,11 +328,19 @@ with col_exp1:
     st.text_area("Generated JSON Audit Report (`reports/assurance_report.json`):", report_json_str, height=140)
 
 with col_exp2:
+    html_report_str = generate_html_report(risk_report)
     st.download_button(
-        label="📥 Download Audit Report",
+        label="📥 Download JSON Report",
         data=report_json_str,
         file_name="aegis_cv_audit_report.json",
         mime="application/json",
+        use_container_width=True
+    )
+    st.download_button(
+        label="📄 Download Printable HTML",
+        data=html_report_str,
+        file_name="aegis_cv_assurance_report.html",
+        mime="text/html",
         use_container_width=True
     )
     st.caption("Verifiable completely offline in air-gapped environments.")

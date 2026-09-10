@@ -1,32 +1,32 @@
 {
-  "timestamp": "2026-09-10T20:34:07.214406+00:00",
+  "timestamp": "2026-09-10T21:27:17.384452+00:00",
   "components": {
     "dataset_coco": {
-      "path": "C:\\Users\\Asus\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\dataset_coco_sample.json",
+      "path": "C:\\Users\\LOQ\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\dataset_coco_sample.json",
       "sha256": "7d649fa02951cd0b6f8afe1be5ac42c05dbc876929bbaa5b7009582bdd314be1",
       "size_bytes": 751
     },
     "dataset_yolo": {
-      "path": "C:\\Users\\Asus\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\dataset_yolo_sample.txt",
+      "path": "C:\\Users\\LOQ\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\dataset_yolo_sample.txt",
       "sha256": "01878e9edd6a344e02231ce34610ff7a648570a8f43d48d325edd25242cb7de2",
       "size_bytes": 267
     },
     "model_onnx": {
-      "path": "C:\\Users\\Asus\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\vision_model.onnx",
+      "path": "C:\\Users\\LOQ\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\vision_model.onnx",
       "sha256": "2d2c74e26e6f0828822f51deb616529c336d2672c0f030c3d220dd286574ea68",
       "size_bytes": 3134
     },
     "config": {
-      "path": "C:\\Users\\Asus\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\pipeline_config.json",
+      "path": "C:\\Users\\LOQ\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\pipeline_config.json",
       "sha256": "9b4c1070d0f096001065fca38e8f8007d35f21bc4904f5feb31184caac344c66",
       "size_bytes": 230
     },
     "records": {
-      "path": "C:\\Users\\Asus\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\inference_records.json",
-      "sha256": "b668d3df81feb5b71d5e33b6190b51711d96db5b3156eeac9eeebc8ad7644e9a",
-      "size_bytes": 465
+      "path": "C:\\Users\\LOQ\\.gemini\\antigravity\\scratch\\YHACK26_YS504_GLITCH\\sample_data\\inference_records.json",
+      "sha256": "4a2696defde14d6b528dba8e96f19d20c88f2d5f1b2422e28a918675c0f27e85",
+      "size_bytes": 448
     }
   },
-  "merkle_root": "fbc24728faa821e21e180e5f108e6c061d826cfeb56a57a5b37a5ea2f26f7136",
-  "signature": "2d189c0ce1d20cfef3459051a99c465ad5df0a4bd069fc7af1c41ae6e1056111"
+  "merkle_root": "74d85a46691207f918503c89fd50ec46c5eb47bf33e2e5bea6b3aecac8db805f",
+  "signature": "7e9bbe2f8b2cb4c3b7861d52828aa89806ad17760791f4f96235c8a1ecaf032e"
 }
