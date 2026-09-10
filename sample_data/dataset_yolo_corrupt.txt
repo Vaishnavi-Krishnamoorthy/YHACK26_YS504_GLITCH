@@ -1,0 +1,9 @@
+# Corrupt YOLO Annotations for Assurance Testing
+# 1. Coordinate > 1.0
+0 1.250000 0.500000 0.200000 0.300000
+# 2. Degenerate width <= 0
+1 0.400000 0.400000 -0.100000 0.200000
+# 3. Box boundary extends outside image frame
+2 0.950000 0.950000 0.300000 0.300000
+# 4. Malformed line missing dimensions
+0 0.5 0.5

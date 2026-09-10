@@ -1,0 +1,1 @@
+# Empty YOLO label file with no annotations

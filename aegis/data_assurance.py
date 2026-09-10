@@ -125,3 +125,22 @@ def validate_coco_annotations(json_path):
         "valid": len(issues) == 0,
         "issues_found": issues
     }
+
+
+def validate_yolo_annotations(file_or_dir_path, image_dir=None, num_classes=None):
+    """
+    Validates YOLO format bounding box annotations (Module 1).
+    Delegates to aegis.formats.yolo_parser.
+    """
+    from aegis.formats.yolo_parser import validate_yolo_file, validate_yolo_dataset
+    if os.path.isfile(file_or_dir_path):
+        res = validate_yolo_file(file_or_dir_path, num_classes=num_classes)
+        return {
+            "total_annotations": res["total_boxes"],
+            "valid": res["valid"],
+            "is_empty": res["is_empty"],
+            "issues_found": res["issues"],
+            "status": res["status"]
+        }
+    return validate_yolo_dataset(file_or_dir_path, image_dir=image_dir, num_classes=num_classes)
+
