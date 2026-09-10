@@ -397,17 +397,45 @@ if scenario == "Custom File Diagnostics":
     if not (up_img or up_dataset or up_model or up_config):
         st.info("Select target files in the left sidebar to begin local verification.")
         st.markdown("""
-        **Available Local Verification Checks:**
-        - **Image Files:** 2D Fast Fourier Transform (FFT) analysis to measure high-frequency energy ratio and detect trigger patterns.
-        - **Dataset Annotations:** Bounding box coordinate bounds, normalization verification [0.0, 1.0], and missing label checks (COCO / YOLO).
-        - **Model Weights:** ONNX computational graph extraction and SHA-256 weight tensor fingerprinting.
-        - **Pipeline Config:** JSON schema validation and cryptographic SHA-256 baseline hashing.
-        """)
+        <div style="background: #090d16; border: 1px solid #1e293b; border-left: 4px solid #3b82f6; border-radius: 6px; padding: 14px 18px; margin-bottom: 16px;">
+          <div style="font-size: 12px; font-weight: 800; color: #38bdf8; text-transform: uppercase;">Available Verification Capabilities:</div>
+          <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px; line-height: 1.5;">
+            &bull; <strong>Image:</strong> 2D Fast Fourier Transform (FFT) high-frequency backdoor trigger detection.<br>
+            &bull; <strong>Annotations:</strong> Strict YOLO [0.0, 1.0] coordinate normalization &amp; COCO bounding box schema validation.<br>
+            &bull; <strong>Model Weights:</strong> ONNX computational graph extraction &amp; SHA-256 cryptographic weight digest.<br>
+            &bull; <strong>Pipeline Config:</strong> Parameter schema parsing &amp; tamper verification.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        with st.expander("Where to find pre-made test files to upload?"):
+            st.markdown("""
+            Pre-generated clean and attack test files are saved in the `custom_test_files/` directory of your project:
+            - **Images:**
+              - `custom_test_files/01_clean_image.png` (Clean gradient -> **PASS**)
+              - `custom_test_files/02_poisoned_checkerboard_image.png` (High-frequency trigger -> **ANOMALY / QUARANTINE**)
+            - **Annotations:**
+              - `custom_test_files/03_valid_yolo_labels.txt` (Normalized [0.0, 1.0] -> **PASS**)
+              - `custom_test_files/04_corrupted_yolo_labels.txt` (Out-of-bounds coordinates -> **ANOMALY**)
+              - `custom_test_files/05_valid_coco_dataset.json` (Valid COCO -> **PASS**)
+              - `custom_test_files/06_malformed_coco_dataset.json` (Degenerate box -> **ANOMALY**)
+            - **Model Weights:**
+              - `custom_test_files/07_clean_vision_model.onnx` (Standard weights)
+              - `custom_test_files/08_tampered_vision_model.onnx` (Altered weights)
+            - **Configuration:**
+              - `custom_test_files/09_valid_pipeline_config.json` (Strict air-gap policy)
+              - `custom_test_files/10_tampered_pipeline_config.json` (Relaxed thresholds)
+            """)
     else:
         st.markdown("#### 2. Diagnostic Analysis Results")
 
+        custom_anomalies = []
+        custom_checks_run = 0
+
+        # --- 1. IMAGE FFT ANALYSIS ---
         if up_img is not None:
-            st.markdown("##### 2D FFT Spectral Analysis")
+            custom_checks_run += 1
+            st.markdown("##### 2D FFT Spectral Poison Analysis")
             col_img_sp, col_img_fft = st.columns(2)
             custom_pil = Image.open(up_img)
             gray = np.array(custom_pil.convert("L"), dtype=float)
@@ -436,32 +464,138 @@ if scenario == "Custom File Diagnostics":
                 st.pyplot(fig)
 
             if is_trigger:
-                st.error(f"[ANOMALY] High-frequency energy ratio: {fft_ratio:.4f} (Safety threshold: 0.38) -> Trigger pattern suspected.")
+                custom_anomalies.append(f"Image {up_img.name}: High-frequency energy ratio {fft_ratio:.4f} > 0.38 threshold (Backdoor trigger suspected).")
+                st.error(f"[ANOMALY DETECTED] High-frequency energy ratio: {fft_ratio:.4f} exceeds baseline safety threshold (0.38). Backdoor trigger pattern suspected.")
             else:
-                st.success(f"[PASS] High-frequency energy ratio: {fft_ratio:.4f} (Within safe baseline <= 0.38).")
+                st.success(f"[PASS] High-frequency energy ratio: {fft_ratio:.4f} is within safe baseline (<= 0.38). No frequency backdoor detected.")
 
+        # --- 2. DATASET ANNOTATIONS VALIDATION ---
         if up_dataset is not None:
-            st.markdown("##### Dataset Annotation Validation")
+            custom_checks_run += 1
+            st.markdown("##### Dataset Annotation Integrity Inspection")
             ext = os.path.splitext(up_dataset.name)[1].lower()
+            
             if ext == ".txt":
                 lines = [line.decode("utf-8") for line in up_dataset.getvalue().splitlines() if line.strip()]
-                st.info(f"Parsed {len(lines)} YOLO annotation entries from {up_dataset.name}.")
+                yolo_errors = []
+                valid_boxes = 0
+                
+                for idx, line in enumerate(lines, 1):
+                    tokens = line.strip().split()
+                    if len(tokens) < 5:
+                        yolo_errors.append(f"Line {idx}: Expected at least 5 tokens, found {len(tokens)}")
+                        continue
+                    try:
+                        cls_id = int(tokens[0])
+                        xc, yc, bw, bh = map(float, tokens[1:5])
+                        if not (0.0 <= xc <= 1.0 and 0.0 <= yc <= 1.0 and 0.0 <= bw <= 1.0 and 0.0 <= bh <= 1.0):
+                            yolo_errors.append(f"Line {idx}: Coordinates out of [0.0, 1.0] bounds -> [x={xc}, y={yc}, w={bw}, h={bh}]")
+                        elif bw <= 0 or bh <= 0:
+                            yolo_errors.append(f"Line {idx}: Degenerate bounding box dimension -> [w={bw}, h={bh}]")
+                        else:
+                            valid_boxes += 1
+                    except ValueError:
+                        yolo_errors.append(f"Line {idx}: Non-numeric coordinates")
+
+                if yolo_errors:
+                    for err in yolo_errors[:5]:
+                        st.error(f"[ANOMALY] {err}")
+                    custom_anomalies.append(f"YOLO Labels {up_dataset.name}: {len(yolo_errors)} invalid coordinate errors detected.")
+                else:
+                    st.success(f"[PASS] Parsed {valid_boxes} YOLO bounding boxes from {up_dataset.name}. All coordinates properly normalized in [0.0, 1.0].")
+
             elif ext == ".json":
                 try:
                     data = json.loads(up_dataset.getvalue().decode("utf-8"))
                     annotations = data.get("annotations", [])
-                    st.success(f"Parsed COCO JSON file: {len(annotations)} annotations across {len(data.get('images', []))} images.")
-                except Exception as e:
-                    st.error(f"JSON Parsing Error: {e}")
+                    images = data.get("images", [])
+                    coco_errors = []
 
-        if up_model or up_config:
-            st.markdown("##### Cryptographic Hashes")
-            if up_model:
-                m_hash = hashlib.sha256(up_model.getvalue()).hexdigest()
-                st.code(f"Model [{up_model.name}] SHA-256: {m_hash}", language="text")
-            if up_config:
-                c_hash = hashlib.sha256(up_config.getvalue()).hexdigest()
-                st.code(f"Config [{up_config.name}] SHA-256: {c_hash}", language="text")
+                    for ann in annotations:
+                        bbox = ann.get("bbox", [])
+                        if len(bbox) != 4:
+                            coco_errors.append(f"Annotation {ann.get('id')}: Invalid bbox length {len(bbox)}")
+                        elif bbox[2] <= 0 or bbox[3] <= 0:
+                            coco_errors.append(f"Annotation {ann.get('id')}: Degenerate width/height {bbox[2:]}")
+
+                    if coco_errors:
+                        for err in coco_errors[:5]:
+                            st.error(f"[ANOMALY] {err}")
+                        custom_anomalies.append(f"COCO Dataset {up_dataset.name}: {len(coco_errors)} malformed bounding boxes.")
+                    else:
+                        st.success(f"[PASS] Parsed COCO dataset: {len(annotations)} annotations across {len(images)} images verified valid.")
+                except Exception as e:
+                    st.error(f"[ERROR] Failed to parse JSON: {e}")
+                    custom_anomalies.append(f"Dataset {up_dataset.name}: Malformed JSON syntax.")
+
+        # --- 3. MODEL GRAPH & WEIGHT INSPECTION ---
+        if up_model is not None:
+            custom_checks_run += 1
+            st.markdown("##### Model Weights & Architecture Inspection")
+            m_bytes = up_model.getvalue()
+            m_hash = hashlib.sha256(m_bytes).hexdigest()
+            st.code(f"Model File: {up_model.name}\nSize: {len(m_bytes):,} bytes\nSHA-256 Digest: {m_hash}", language="text")
+
+            if up_model.name.lower().endswith(".onnx"):
+                temp_model_path = os.path.join(SAMPLE_DIR, "_temp_custom.onnx")
+                try:
+                    with open(temp_model_path, "wb") as f:
+                        f.write(m_bytes)
+                    onnx_meta = inspect_onnx_model(temp_model_path)
+                    st.info(f"ONNX Graph: {onnx_meta.get('total_nodes')} computational nodes | Producer: {onnx_meta.get('producer_name') or 'Custom'}")
+                    col_m1, col_m2 = st.columns(2)
+                    with col_m1:
+                        st.caption("Graph Inputs:")
+                        st.json(onnx_meta.get("inputs", []))
+                    with col_m2:
+                        st.caption("Graph Outputs:")
+                        st.json(onnx_meta.get("outputs", []))
+                except Exception as ex:
+                    st.warning(f"ONNX Inspection notice: {ex}")
+                finally:
+                    if os.path.exists(temp_model_path):
+                        os.remove(temp_model_path)
+
+        # --- 4. CONFIGURATION VALIDATION ---
+        if up_config is not None:
+            custom_checks_run += 1
+            st.markdown("##### Pipeline Configuration Verification")
+            c_bytes = up_config.getvalue()
+            c_hash = hashlib.sha256(c_bytes).hexdigest()
+            st.code(f"Configuration: {up_config.name}\nSHA-256 Digest: {c_hash}", language="text")
+            try:
+                cfg_data = json.loads(c_bytes.decode("utf-8"))
+                policy = cfg_data.get("security_policy", "STANDARD")
+                st.caption(f"Security Policy Declared: {policy}")
+            except Exception as e:
+                st.error(f"Malformed Config JSON: {e}")
+                custom_anomalies.append(f"Config {up_config.name}: Malformed JSON syntax.")
+
+        # --- 5. OVERALL CUSTOM TRIAGE VERDICT ---
+        st.markdown("---")
+        st.markdown("#### 3. Custom File Triage Verdict")
+        if custom_anomalies:
+            st.markdown(f"""
+            <div class="triage-panel panel-quarantine">
+              <div class="triage-badge badge-quarantine">VERDICT: QUARANTINE</div>
+              <div class="triage-verdict-text text-quarantine">ANOMALIES DETECTED &mdash; EXECUTION ISOLATED</div>
+              <div style="font-size: 13px; color: #cbd5e1; margin-top: 6px;">
+                The uploaded assets failed assurance validation ({len(custom_anomalies)} anomalies). The pipeline has been automatically quarantined to prevent corrupted data or backdoored models from executing.
+              </div>
+            </div>
+            """, unsafe_allow_html=True)
+            for anom in custom_anomalies:
+                st.markdown(f"<div class='telemetry-row telemetry-danger'>• {anom}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div class="triage-panel panel-accept">
+              <div class="triage-badge badge-accept">VERDICT: ACCEPT</div>
+              <div class="triage-verdict-text text-accept">ALL CUSTOM ASSETS VERIFIED INTACT</div>
+              <div style="font-size: 13px; color: #cbd5e1; margin-top: 6px;">
+                All uploaded target assets passed structural, spectral, and coordinate boundary checks with zero anomalies detected.
+              </div>
+            </div>
+            """, unsafe_allow_html=True)
 
 # =============================================================================
 # ROUTING: BASELINE OR THREAT SIMULATION

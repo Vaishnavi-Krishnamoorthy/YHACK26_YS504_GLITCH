@@ -1,0 +1,8 @@
+{
+  "pipeline_name": "AEGIS-CV-Production",
+  "version": "1.0.0",
+  "security_policy": "STRICT_AIRGAP",
+  "fft_poison_threshold": 0.38,
+  "z_score_drift_threshold": 2.5,
+  "approved_model_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

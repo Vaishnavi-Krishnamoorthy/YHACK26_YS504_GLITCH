@@ -1,0 +1,8 @@
+{
+  "pipeline_name": "AEGIS-CV-Production",
+  "version": "1.0.0",
+  "security_policy": "PERMISSIVE_UNVERIFIED",
+  "fft_poison_threshold": 0.99,
+  "z_score_drift_threshold": 99.9,
+  "approved_model_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

@@ -1,0 +1,30 @@
+{
+  "images": [
+    {
+      "id": 1,
+      "file_name": "01_clean_image.png",
+      "width": 128,
+      "height": 128
+    }
+  ],
+  "annotations": [
+    {
+      "id": 1,
+      "image_id": 1,
+      "category_id": 0,
+      "bbox": [
+        32,
+        32,
+        64,
+        64
+      ],
+      "area": 4096
+    }
+  ],
+  "categories": [
+    {
+      "id": 0,
+      "name": "vehicle"
+    }
+  ]
+}
