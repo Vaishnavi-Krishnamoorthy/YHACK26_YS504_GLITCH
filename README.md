@@ -12,7 +12,7 @@
 - **Vaishnavi (Team Leader)**: System architecture & composite risk scoring engine
 - **Vaishnavi K / S**: Cryptographic provenance chain, SHA-256 hashing & Merkle tree
 - **Varshini R**: FFT-based dataset poison detection & model layer fingerprinting
-- **Tarun Pranav RS**: Inference drift monitoring & audit report export
+- **Tarun Pranav RS**: Inference drift monitoring & UI dashboard
 
 ---
 
@@ -48,29 +48,30 @@ Pipeline Config  ──►  4. Crypto Provenance (Merkle Tree)    ──┘     
 
 ---
 
-## Quickstart (Review 2 Integration Demo)
+## How to Run the System
 
 ### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
-*(Only requires standard `numpy` and `Pillow`. Everything else uses standard library for air-gap compliance.)*
 
-### 2. Run Full Review 2 Assurance Demo
+### 2. Launch the Interactive Web Dashboard (Streamlit)
+```bash
+streamlit run app.py
+```
+*Opens an interactive offline browser interface displaying:*
+* Live Risk Score Gauge (0–100) and ACCEPT / REVIEW / QUARANTINE badges
+* Visual 2D FFT Frequency Spectrum plots comparing clean vs. poisoned trigger images
+* Layer-by-layer model fingerprint comparison table
+* Cryptographic Merkle tree structure & HMAC receipt
+* One-click audit report download
+
+### 3. Run the CLI Review 2 Master Runner
 ```bash
 python run_aegis.py
 ```
 
-This runs two automated tests:
-1. **Clean Baseline Run**: Verifies all components $\rightarrow$ Risk Score: `0 / 100` $\rightarrow$ **`ACCEPT [CLEARED]`**.
-2. **Multi-Vector Attack Simulation**:
-   - Injects a high-frequency FFT trigger into an image.
-   - Replaces classifier head weights (`head.fc.weight`).
-   - Simulates operational confidence drift.
-   - Detects all three threats simultaneously $\rightarrow$ Risk Score: `75 / 100` $\rightarrow$ **`QUARANTINE`**.
-   - Exports the full audit report to `reports/assurance_report.json`.
-
-### 3. Run Standalone Provenance Chain (Review 1 Demo)
+### 4. Run the Standalone Provenance Chain (Review 1)
 ```bash
 python provenance_chain.py
 ```
@@ -82,8 +83,9 @@ python provenance_chain.py
 ```
 YHACK26_YS504_GLITCH/
 ├── README.md               # Project documentation & usage
-├── requirements.txt        # Minimal offline dependencies (numpy, Pillow)
-├── run_aegis.py            # Master runner for Review 2 (all 5 modules)
+├── requirements.txt        # Offline dependencies (numpy, Pillow, streamlit, matplotlib)
+├── app.py                  # 🌟 Interactive Streamlit Web Dashboard
+├── run_aegis.py            # Master CLI runner for Review 2 (all 5 modules)
 ├── provenance_chain.py     # Standalone provenance & Merkle demo (Review 1)
 ├── aegis/                  # Core package
 │   ├── __init__.py
@@ -104,10 +106,10 @@ YHACK26_YS504_GLITCH/
 
 ---
 
-## Review 1 & 2 Deliverables Checklist
+## Review Deliverables Checklist
 
 - [x] **Problem Understanding**: Identified threats across data, model, and inference layers in air-gapped systems.
 - [x] **Feasibility & Architecture**: Built 5 offline modules using standard cryptographic and vision algorithms.
-- [x] **Development Planning**: Completed Phase 1 (Provenance) & Phase 2 (Multi-module integration).
-- [x] **Visible Prototype Progress**: Tested end-to-end with simulated attacks producing verified terminal outputs.
+- [x] **Development Planning**: Completed Phase 1 (Provenance), Phase 2 (Multi-engine integration), Phase 3 (Streamlit UI).
+- [x] **Visible Prototype Progress**: Tested end-to-end with simulated attacks producing verified terminal and UI outputs.
 - [x] **Originality**: Combines cryptographic hash receipts with computer-vision-specific frequency and layer analysis.
