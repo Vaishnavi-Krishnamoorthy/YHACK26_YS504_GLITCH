@@ -1,0 +1,24 @@
+{
+  "receipt_id": "AEGIS-RCPT-20461FFAD97F",
+  "timestamp_utc": "2026-09-10T14:07:03.708999+00:00",
+  "framework": "AEGIS-CV v1.0 (Air-Gapped)",
+  "pipeline_components": {
+    "1. Input Dataset (COCO)": {
+      "file_path": "C:/Users/LOQ/.gemini/antigravity/scratch/YHACK26_YS504_GLITCH/sample_data/dataset_coco_sample.json",
+      "sha256": "7d649fa02951cd0b6f8afe1be5ac42c05dbc876929bbaa5b7009582bdd314be1",
+      "size_bytes": 751
+    },
+    "2. Model Weights (Binary)": {
+      "file_path": "C:/Users/LOQ/.gemini/antigravity/scratch/YHACK26_YS504_GLITCH/sample_data/vision_model_weights.bin",
+      "sha256": "9f34fc9437798b70b88f05cd457424dc38f12aec7df5259b0a4abf93d40e4114",
+      "size_bytes": 3132
+    },
+    "3. Pipeline Config (JSON)": {
+      "file_path": "C:/Users/LOQ/.gemini/antigravity/scratch/YHACK26_YS504_GLITCH/sample_data/pipeline_config.json",
+      "sha256": "9b4c1070d0f096001065fca38e8f8007d35f21bc4904f5feb31184caac344c66",
+      "size_bytes": 230
+    }
+  },
+  "merkle_root": "5647918c81a9ec7356a2a36320cc5405c39afff0983c51c52a4bb39c576b202e",
+  "hmac_signature": "5d688c72ecd62a4645712821235656c197666536742a4a2e227485eea1bb526f"
+}

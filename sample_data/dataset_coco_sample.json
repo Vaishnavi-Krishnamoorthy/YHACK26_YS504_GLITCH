@@ -1,0 +1,46 @@
+{
+  "info": {
+    "description": "YHACK26 CV Assurance Dataset",
+    "version": "1.0"
+  },
+  "images": [
+    {
+      "id": 1,
+      "file_name": "surveillance_001.jpg",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": 2,
+      "file_name": "drone_patrol_042.jpg",
+      "width": 1280,
+      "height": 720
+    }
+  ],
+  "annotations": [
+    {
+      "id": 101,
+      "image_id": 1,
+      "category_id": 1,
+      "bbox": [
+        120,
+        240,
+        50,
+        110
+      ],
+      "label": "person"
+    },
+    {
+      "id": 102,
+      "image_id": 2,
+      "category_id": 3,
+      "bbox": [
+        530,
+        180,
+        200,
+        95
+      ],
+      "label": "vehicle"
+    }
+  ]
+}

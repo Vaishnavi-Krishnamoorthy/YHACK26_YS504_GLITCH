@@ -1,0 +1,11 @@
+{
+  "pipeline_name": "AutonomousSurveillanceDetector_v2",
+  "input_resolution": [
+    640,
+    640
+  ],
+  "confidence_threshold": 0.65,
+  "nms_iou_threshold": 0.45,
+  "backbone": "ResNet-50-FPN",
+  "air_gap_mode": true
+}
